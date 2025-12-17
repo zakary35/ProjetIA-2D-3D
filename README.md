@@ -28,6 +28,8 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
+---
+```
 ## 📂 Project Structure
 This repository is organized as follows:
 
@@ -41,9 +43,8 @@ This repository is organized as follows:
 ## 👥 Authors
 This project is part of the Master IA & Applications curriculum at **ISTIC (Univ. Rennes 1)**.
 
-- **[VOTRE NOM]** - *AI Engineer & Pipeline Lead* - [Lien vers votre GitHub]
-- **[NOM DU CAMARADE]** - *Rôle (ex: Data Processing)*
-- **[NOM DU CAMARADE]** - *Rôle (ex: VR Integration)*
+- **Daniel Quenum** - *AI Engineer & Pipeline Lead* - https://github.com/danielquenum
+- **Elie Danigue** - *AI Engineer & Pipeline Lead* - 
+- **Zakary Sadok** - *AI Engineer & Pipeline Lead* - 
 
----
 *Made with ❤️ using PyTorch and Depth Anything V2.*

@@ -1,8 +1,0 @@
-__pycache__/
-*.ipynb_checkpoints
-*.mp4
-*.avi
-*.pth
-venv/
-data/
-arbores.txt

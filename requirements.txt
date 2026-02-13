@@ -1,0 +1,14 @@
+torch==2.4.1
+torchvision==0.19.1
+xformers==0.0.28.post1
+numpy==1.24.3
+opencv-python
+scipy
+matplotlib
+decord
+imageio==2.37.0
+imageio-ffmpeg==0.4.7
+einops
+easydict
+tqdm
+lpips  # Pour la métrique T-LPIPS

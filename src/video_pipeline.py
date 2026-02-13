@@ -6,10 +6,10 @@ from tqdm import tqdm
 from typing import Dict, Any, Optional
 
 # Imports de vos modules
-from .depth_engine import VDAEngine, DAV2Engine
-from .metrics import StabilityMetrics
-from .stabilizer import DepthStabilizer
-from .raft_optical_flow import RAFTFlowEngine
+from depth_engine import VDAEngine, DAV2Engine
+from metrics import StabilityMetrics
+from stabilizer import DepthStabilizer
+from raft_optical_flow import RAFTFlowEngine
 
 class VideoPipeline:
     """
@@ -112,7 +112,6 @@ class VideoPipeline:
                 flow = self.metrics.raft_engine.compute_flow(self.prev_frame, frame)
 
             # 3. Stabilisation (Optionnelle)
-            # On passe le 'flow' pour éviter que le stabilisateur ne recalcule Farneback
             depth = self.stabilizer.apply(raw_depth, frame, flow=flow)
             
             # 4. Normalisation [0, 1] (Critique pour métriques et visu)
@@ -168,22 +167,34 @@ class VideoPipeline:
         """Post-traitement des statistiques (PSD, Moyennes)."""
         print("📊 Calcul des métriques globales (PSD)...")
         
-        # Calcul PSD sur les sondes
         # probes_stack: [Frames, 100]
+        # Ce tableau contient l'évolution temporelle de 100 points de l'image
         probes_stack = np.array(self.stats['probes_psd']) 
-        # On transpose pour avoir [100, Frames] compatible avec Welch
+        
+        # --- CORRECTION DIMENSIONS ---
+        # calculate_avg_psd attend [Frames, H, W]
+        # On transforme nos 100 sondes plates en une fausse grille 10x10
+        # Ainsi, la fonction pourra itérer dessus avec grid_size=1
+        if probes_stack.shape[1] == 100:
+            fake_spatial_stack = probes_stack.reshape(-1, 10, 10) # [Frames, 10, 10]
+            grid_size = 1
+        else:
+            # Fallback générique
+            fake_spatial_stack = probes_stack.reshape(probes_stack.shape[0], 1, -1)
+            grid_size = 1
+
         freqs, avg_psd = self.metrics.calculate_avg_psd(
-            probes_stack.T.reshape(-1, len(probes_stack), 1), # Hack dimensions pour votre fonction
+            fake_spatial_stack, 
             fs=fps, 
-            grid_size=10
+            grid_size=grid_size
         )
         
         # Pour le rapport final
         results = {
-            'fps_process': 1.0 / np.mean(self.stats['processing_time']),
-            'warping_error_mean': np.mean(self.stats['warping_error']),
-            'lpips_mean': np.mean(self.stats['temporal_lpips']),
-            'edge_alignment_mean': np.mean(self.stats['edge_alignment']),
+            'fps_process': 1.0 / (np.mean(self.stats['processing_time']) + 1e-6),
+            'warping_error_mean': np.mean(self.stats['warping_error']) if self.stats['warping_error'] else 0.0,
+            'lpips_mean': np.mean(self.stats['temporal_lpips']) if self.stats['temporal_lpips'] else 0.0,
+            'edge_alignment_mean': np.mean(self.stats['edge_alignment']) if self.stats['edge_alignment'] else 0.0,
             'psd_data': {'freqs': freqs.tolist(), 'power': avg_psd.tolist()}
         }
         

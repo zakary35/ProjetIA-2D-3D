@@ -6,10 +6,10 @@ from tqdm import tqdm
 from typing import Dict, Any, Optional
 
 # Imports de vos modules
-from depth_engine import VDAEngine, DAV2Engine
-from metrics import StabilityMetrics
-from stabilizer import DepthStabilizer
-from raft_optical_flow import RAFTFlowEngine
+from src.depth_engine import VDAEngine, DAV2Engine
+from src.metrics import StabilityMetrics
+from src.stabilizer import DepthStabilizer
+from src.raft_optical_flow import RAFTFlowEngine
 
 class VideoPipeline:
     """

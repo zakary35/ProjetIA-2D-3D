@@ -24,13 +24,13 @@ class BaseDepthEngine:
         # 1. Détection automatique du GPU
         if device is None:
             if torch.cuda.is_available():
-                self.device = torch.device('cuda')
+                self.device = 'cuda'
             elif torch.backends.mps.is_available():
-                self.device = torch.device('mps')
+                self.device = 'mps'
             else:
-                self.device = torch.device('cpu')
+                self.device = 'cpu'
         else:
-            self.device = torch.device(device)
+            self.device = device
 
         print(f"🚀 [DepthEngine] Initialisation sur : {str(self.device).upper()}")
         self.model = None
